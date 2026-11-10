@@ -1,0 +1,54 @@
+[package]
+name = "voltachill"
+version = "0.2.0"
+edition = "2021"
+
+# Desktop builds the binary (src/main.rs → voltachill::desktop_main).
+# Android builds the cdylib whose android_main is the NativeActivity entry.
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+eframe = "0.37"
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+# Real Bluetooth OBD link (btleplug + tokio) only on desktop. Android uses a stub
+# worker in obd.rs for the Phase-1 UI PoC; real Android BLE comes in Phase 2.
+[target.'cfg(not(target_os = "android"))'.dependencies]
+btleplug = "0.13.5"
+futures = "0.3.34"
+uuid = "1.29.1"
+tokio = { version = "1.54.1", features = ["rt", "time", "macros"] }
+
+[target.'cfg(target_os = "android")'.dependencies]
+# GameActivity: a real Java Activity we subclass in Kotlin (BLE + permissions). Gradle build.
+winit = { version = "0.30", features = ["android-game-activity"] }
+android_logger = "0.14"
+log = "0.4"
+jni = "0.21"
+ndk-context = "0.1"
+
+[profile.dev]
+opt-level = 1
+
+# cargo-apk packaging (Phase 1 UI PoC). NativeActivity loads libvoltachill.so → android_main.
+[package.metadata.android]
+package = "com.tanawoot.scanlab"
+build_targets = ["aarch64-linux-android"]
+
+[package.metadata.android.sdk]
+min_sdk_version = 24
+target_sdk_version = 35
+
+[package.metadata.android.application]
+label = "ScanLab"
+
+# Declared now for Phase 2 (real BLE); unused by the Phase-1 UI PoC.
+[[package.metadata.android.uses_permission]]
+name = "android.permission.BLUETOOTH_SCAN"
+
+[[package.metadata.android.uses_permission]]
+name = "android.permission.BLUETOOTH_CONNECT"
+
+[[package.metadata.android.uses_permission]]
+name = "android.permission.ACCESS_FINE_LOCATION"

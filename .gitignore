@@ -1,0 +1,25 @@
+# Rust
+/target
+# macOS
+.DS_Store
+# bundles / binaries
+*.app
+# logs & local data
+*.log
+# APKs
+*.apk
+*.idsig
+# keystores / signing
+*.jks
+*.keystore
+*-signing.properties
+# Android / Gradle
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/app/src/main/jniLibs/
+.gradle/
+# personal / owner data
+BYD_*.xlsx
+docs/
